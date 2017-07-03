@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>canvas</title>
+<style>
+	canvas{
+    	border: 1px dashed red;
+  	}
+  	#tips{
+  		display: inline-block;
+  		margin-left: 50px;
+  	}
+  	.cols{
+  		padding: 20px;
+  		border: 1px solid #000;
+  		margin-bottom: 30px;
+  		text-align: center;
+  	}
+</style>
+</head>
+<body>
+	<canvas width="600" height="400"></canvas>
+	<div id="tips">
+		<div class="cols">按向左键控制小人向左移动</div>
+		<div class="cols">按向上键控制小人向上移动</div>
+		<div class="cols">按向右键控制小人向右移动</div>
+		<div class="cols">按向下键控制小人向下移动</div>	
+		<div class="cols">按空格键控制小人停止或者开始移动</div>	
+	</div>
+</body>
+<script>
+	var cas = document.querySelectorAll( 'canvas' )[ 0 ];
+	var ctx = cas.getContext( '2d' );
+	
+	var img=document.createElement("img");
+	var width,height;
+	img.src="士兵.png";
+
+	img.onload=function(){
+		width=img.width/4;
+		height=img.height/4;
+		var xIndex=0,
+			yIndex=0,
+			flag=true,
+			step=5;
+		var casHeight=0,
+			casWidth=0;
+		function draw(){
+			xIndex++;
+			var x=(xIndex%4)*width;
+			var y=yIndex*height;
+			if(casWidth>cas.width-width||casWidth<0){
+				console.log(yIndex);
+				yIndex=(yIndex==1)?2:1;
+				console.log(yIndex);
+			}
+			if(casHeight>cas.height-height||casHeight<0){
+				console.log(yIndex);
+				yIndex=(yIndex==0)?3:0;
+				console.log(yIndex);
+			}
+			switch(yIndex){
+				case 1:
+					casWidth-=step;
+					break;
+				case 3:
+					casHeight-=step;
+					break;
+				case 2:
+					casWidth+=step;
+					break;
+				case 0:
+					casHeight+=step;
+					break;
+				default:
+			}
+			ctx.drawImage(img, x, y, width, height, casWidth, casHeight, width, height);
+		}
+		function clear(){
+			ctx.clearRect(0, 0, 600, 400);
+		}
+		var intervalId=setInterval(function(){
+			clear();
+			draw();
+		}, 100);
+		window.onkeydown=function(e){
+			console.log(e.keyCode);
+			if(e.keyCode==32){
+				flag=!flag;
+				if(flag){
+					intervalId=setInterval(function(){
+						clear();
+						draw();
+					}, 100);
+				}else{
+					clearInterval(intervalId);
+				}
+			}else if(flag){
+				switch(e.keyCode){
+				case 37:
+					yIndex=1;
+					break;
+				case 38:
+					yIndex=3;
+					break;
+				case 39:
+					yIndex=2;
+					break;
+				case 40:
+					yIndex=0;
+					break;
+				default:
+				}
+			}
+		}
+	}
+</script>
+</html>
