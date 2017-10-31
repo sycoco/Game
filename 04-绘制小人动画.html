@@ -32,20 +32,31 @@
 <script>
 	var cas = document.querySelectorAll( 'canvas' )[ 0 ];
 	var ctx = cas.getContext( '2d' );
+	var trail = {};
+	trail.x = -100;
+	trail.y = -100;
+	trail.xspeed = 0;
+	trail.yspeed = 0;
+	
+
 	
 	var img=document.createElement("img");
 	var width,height;
 	img.src="士兵.png";
+	
+	var casHeight=0;
+	var casWidth=0;
+	
+	var xIndex=0;
+	var yIndex=0;
 
 	img.onload=function(){
 		width=img.width/4;
 		height=img.height/4;
-		var xIndex=0,
-			yIndex=0,
-			flag=true,
-			step=5;
-		var casHeight=0,
-			casWidth=0;
+		
+		var flag=true;
+		var step=5;
+		
 		function draw(){
 			xIndex++;
 			var x=(xIndex%4)*width;
@@ -76,6 +87,14 @@
 				default:
 			}
 			ctx.drawImage(img, x, y, width, height, casWidth, casHeight, width, height);
+			
+			//draw trail trail
+			if(trail.x > 0 && trail.x < 600 && trail.y > 0 && trail.y < 400){
+				trail.x += trail.xspeed*5;
+				trail.y += trail.yspeed*5;
+				ctx.rect(trail.x+5,trail.y+50,5,5);
+				ctx.stroke();
+			}
 		}
 		function clear(){
 			ctx.clearRect(0, 0, 600, 400);
@@ -83,32 +102,44 @@
 		var intervalId=setInterval(function(){
 			clear();
 			draw();
-		}, 100);
+		}, 30);
 		window.onkeydown=function(e){
 			console.log(e.keyCode);
-			if(e.keyCode==32){
+			if(e.keyCode==32){ // space
 				flag=!flag;
 				if(flag){
 					intervalId=setInterval(function(){
 						clear();
 						draw();
-					}, 100);
+					}, 30);
 				}else{
 					clearInterval(intervalId);
 				}
 			}else if(flag){
 				switch(e.keyCode){
-				case 37:
+				case 37: // left
 					yIndex=1;
+					trail.xspeed = -1;
+					trail.yspeed = 0;
 					break;
-				case 38:
+				case 38: // up
 					yIndex=3;
+					trail.xspeed = 0;
+					trail.yspeed = -1;
 					break;
-				case 39:
+				case 39: // right
 					yIndex=2;
+					trail.xspeed = 1;
+					trail.yspeed = 0;
 					break;
-				case 40:
+				case 40: // down
 					yIndex=0;
+					trail.xspeed = 0;
+					trail.yspeed = 1;
+					break;
+				case 70: // f-key
+					trail.x = casWidth;
+					trail.y = casHeight;
 					break;
 				default:
 				}
