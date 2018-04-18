@@ -1,1 +1,1 @@
-Simple web game
+Simple web game with canvas
